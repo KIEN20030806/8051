@@ -1,0 +1,5 @@
+".\Objects\STARTUP.obj",
+".\Objects\nec_ir.obj",
+".\Objects\main.obj" 
+TO ".\Objects\IR_Remote" 
+PRINT(".\Listings\IR_Remote.m51") RAMSIZE(256) 

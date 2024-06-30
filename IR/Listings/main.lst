@@ -1,0 +1,47 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2023 16:28:41 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include<at89x52.h>
+   2          int n=1;
+   3            int i;
+   4          main()
+   5          {
+   6   1        
+   7   1        while(1)
+   8   1        {
+   9   2          if (P3_2==0 && n==1)
+  10   2          {
+  11   3            P2=0; n=1-n;
+  12   3            for(i=0; i<1000;i++)
+  13   3            {}
+  14   3          }
+  15   2          else
+  16   2            if(P3_2==0 && n==0)
+  17   2          {
+  18   3            P2=0xff; n=1-n;
+  19   3            for(i=0; i<1000;i++)
+  20   3            {}
+  21   3          }
+  22   2        }
+  23   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    103    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

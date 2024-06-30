@@ -1,0 +1,85 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              08/28/2023 14:00:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x51.h>
+   2          #define LED0 P2_0
+   3          #define LED1 P2_1
+   4          #define LED2 P2_2
+   5          #define LED3 P2_3
+   6          #define LED4 P2_4
+   7          #define LED5 P2_5
+   8          #define LED6 P2_6
+   9          #define LED7 P2_7
+  10          
+  11          void delay(unsigned int
+  12          ms)
+  13          {
+  14   1        unsigned int i,j;
+  15   1        for (i=0;i<ms;i++)
+  16   1          for (j=0;j<120;j++)
+  17   1          {}
+  18   1      }
+  19          
+  20          main(void)
+  21          {
+  22   1        P2 = 0xff;
+  23   1        delay(300);
+  24   1        while(1)
+  25   1        {
+  26   2          LED0=0;
+  27   2        delay(300);
+  28   2        LED1=0;
+  29   2        delay(300);
+  30   2        LED2=0;
+  31   2        delay(300);
+  32   2        LED3=0;
+  33   2        delay(300);
+  34   2        LED4=0;
+  35   2        delay(300);
+  36   2        LED5=0;
+  37   2        delay(300);
+  38   2        LED6=0;
+  39   2        delay(300);
+  40   2        LED7=0;
+  41   2        delay(300);
+  42   2        LED0=1;
+  43   2        delay(300);
+  44   2        LED1=1;
+  45   2        delay(300);
+  46   2        LED2=1;
+  47   2        delay(300);
+  48   2        LED3=1;
+  49   2        delay(300);
+  50   2        LED4=1;
+  51   2        delay(300);
+  52   2        LED5=1;
+  53   2        delay(300);
+  54   2        LED6=1;
+C51 COMPILER V9.60.7.0   MAIN                                                              08/28/2023 14:00:10 PAGE 2   
+
+  55   2        delay(300);
+  56   2        LED7=1;
+  57   2        delay(300);
+  58   2        }
+  59   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    128    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

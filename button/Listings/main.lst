@@ -1,0 +1,61 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              08/28/2023 14:21:42 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x51.h>
+   2          
+   3          void delay(unsigned int
+   4          ms)
+   5          {
+   6   1        unsigned int i,j;
+   7   1        for (i=0;i<ms;i++)
+   8   1          for (j=0;j<120;j++)
+   9   1          {}
+  10   1      }
+  11          main(void)
+  12          {
+  13   1        P2_0 = P2_1 = P2_2= P2_3 = 1;
+  14   1        while(1)
+  15   1        {
+  16   2          if(P3_1==0)
+  17   2          {
+  18   3            P2_0 = ~P2_0;
+  19   3            delay(1000);
+  20   3          }
+  21   2          else if(P3_0==0)
+  22   2          {
+  23   3            P2_1 = ~P2_1;
+  24   3            delay(1000);
+  25   3          }
+  26   2          else if(P3_2==0)
+  27   2          {
+  28   3            P2_2 = ~P2_2;
+  29   3            delay(1000);
+  30   3          }
+  31   2          else if(P3_3==0)
+  32   2          {
+  33   3            P2_3 = ~P2_3;
+  34   3            delay(1000);
+  35   3          }
+  36   2        }
+  37   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     82    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

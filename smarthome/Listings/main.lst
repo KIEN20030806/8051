@@ -1,0 +1,236 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              11/19/2023 14:44:42 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Users) DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          #include <XPT2046.c>
+   3          
+   4          
+   5          unsigned long int bitMask=0,newKey=0;
+   6          unsigned char tVal;
+   7          unsigned char ticks=0;
+   8          char pulseCnt=0;
+   9          int key=0, t=0;
+  10          float light = 0;
+  11          unsigned int ain2 = 0x0000;                                                                               
+             -                                                                                                                        
+             -                                                                                                                        
+             -                                           
+  12          
+  13          sbit LED1 = P2^0;
+  14          sbit LED2 = P2^1;
+  15          sbit LED3 = P2^2;
+  16          
+  17          #define RL                                            100.0
+  18          #define LDR_Constant                                500000.0
+  19          #define VDD_in_mV                                   5000.0
+  20          #define ADC_count_max                               4095.0
+  21          
+  22          #define POWER   0xFFA25D
+  23          #define RESET   0xFF629D
+  24          #define MODE    0xFFE21D
+  25          #define CH_MIN  0xFF22DD
+  26          #define CH_PLS  0xFF02FD
+  27          #define PREV    0xFFE01F
+  28          #define NEXT    0xFFA857
+  29          #define EQ      0xFFC23D
+  30          #define VOL_M   0xFF6897
+  31          #define VOL_P   0xFF9867
+  32          #define PLAY    0xFF906F
+  33          #define ZERO    0xFFB04F
+  34          #define ONE     0xFF30CF
+  35          #define TWO     0xFF18E7
+  36          #define THREE   0xFF7A85
+  37          #define FOUR    0xFF10EF
+  38          #define FIVE    0xFF38C7
+  39          #define SIX     0xFF5AA5
+  40          #define SEVEN   0xFF42BD
+  41          #define EIGHT   0xFF4AB5
+  42          #define NINE    0xFF52AD
+  43          
+  44          int keypad[2][4]={{1,2,3,4},
+  45                            {5,6,7,8}
+  46                            };
+  47          
+  48          void delay(unsigned int ms)
+  49          {
+  50   1        unsigned int p,k;
+  51   1        for (p=0;p<ms;p++)
+C51 COMPILER V9.60.7.0   MAIN                                                              11/19/2023 14:44:42 PAGE 2   
+
+  52   1          for (k=0;k<120;k++)
+  53   1          {}
+  54   1      }
+  55          
+  56          int quetphim()
+  57          {
+  58   1      int c, r;
+  59   1      P1=0x0F;
+  60   1      delay(2);
+  61   1        if(P1!=0x0F)   
+  62   1        {
+  63   2          for(r=0;r<2;r++)                    
+  64   2          {
+  65   3            P1=~(0x01<<(4+r));
+  66   3            delay(1);
+  67   3            for(c=0;c<4;c++)         
+  68   3            {
+  69   4              if((P1&(0x01<<c))==0)
+  70   4              {
+  71   5                while((P1&(0x01<<c))==0) {};
+  72   5                  P1=0x0F;
+  73   5                return keypad[r][3-c]; 
+  74   5            }
+  75   4            }
+  76   3          }
+  77   2        }
+  78   1      P1=0x0F;
+  79   1        return 0;
+  80   1      }
+  81          
+  82          void timer0_ISR() interrupt 1
+  83          {
+  84   1          if(ticks<50){
+  85   2              ticks++;
+  86   2          }
+  87   1          
+  88   1          TH0 = 0xFC;   /*Reload Timer Values for 1ms*/
+  89   1          TL0 = 0x67;
+  90   1      }
+  91          
+  92          
+  93          void INT0_ISR()  interrupt 0
+  94          {
+  95   1          tVal = ticks;
+  96   1          ticks = 0;
+  97   1      
+  98   1          TH0 = 0xFC;  /*Reload Timer Values for 1ms*/
+  99   1          TL0 = 0x67;
+ 100   1      
+ 101   1          pulseCnt++;
+ 102   1      
+ 103   1          if((tVal>=50)) /*Pulse width greater than 50ms signifies Start of Frame*/
+ 104   1          { 
+ 105   2              pulseCnt = -2; /*Skip first 2 counts*/
+ 106   2              bitMask = 0;
+ 107   2          }
+ 108   1          else if((pulseCnt>=0) && (pulseCnt<32)) 
+ 109   1          {  
+ 110   2            /* Accumulate 32 bit data */
+ 111   2              if(tVal>=2)            
+ 112   2              {
+ 113   3                  bitMask |=(unsigned long int)1<<(31-pulseCnt);
+C51 COMPILER V9.60.7.0   MAIN                                                              11/19/2023 14:44:42 PAGE 3   
+
+ 114   3              }
+ 115   2      
+ 116   2          }
+ 117   1          else if(pulseCnt>=32)          /*End of Frame*/
+ 118   1          {
+ 119   2              newKey = bitMask;      
+ 120   2              pulseCnt = 0;
+ 121   2          }
+ 122   1      }
+ 123          
+ 124          
+ 125          void timerInit (void)
+ 126          {
+ 127   1          TMOD |= 0x01;  /* Timer 0 Mode 1 */
+ 128   1          TH0 = 0xFC;    /* Reload Value for 1ms for AT89S52*/
+ 129   1          TL0 = 0x67;
+ 130   1          TR0 = 1;       /*Start Timer*/
+ 131   1          ET0 = 1;       /*Enable Timer Interrupt*/
+ 132   1          
+ 133   1          IT0 = 1;       /*Int0 Falling Edge Interrupt*/
+ 134   1          EX0 = 1;       /*Enable INT0 Interrupt*/
+ 135   1          
+ 136   1          EA  = 1;       /*Enable Global Interrupts*/
+ 137   1      }
+ 138          
+ 139          
+ 140          void main()
+ 141          {   
+ 142   1        timerInit();
+ 143   1          while(1)
+ 144   1          {
+ 145   2            key = quetphim();
+ 146   2              if(newKey!=0 || key!=0 )    
+ 147   2              {  
+ 148   3                  if(newKey == ONE || key==1){
+ 149   4                    P2=0x1c;
+ 150   4                    P0=0x06;
+ 151   4                  }
+ 152   3                  else if(newKey == TWO || key==2){
+ 153   4                    P2=0x18;
+ 154   4                    P0=0x5b;
+ 155   4                  }
+ 156   3                  else if(newKey == THREE || key==3)
+ 157   3                  {
+ 158   4                    P2=0x14;
+ 159   4                    P0=0x4f;
+ 160   4                  }
+ 161   3                  else if(newKey == FOUR || key==4)
+ 162   3                  {
+ 163   4                    P2=0x10;
+ 164   4                    P0=0x66;
+ 165   4                  }
+ 166   3                  else if(newKey == FIVE || key==5)
+ 167   3                  {
+ 168   4                    P2=0x0c;
+ 169   4                      P0=0x6D;
+ 170   4                  }
+ 171   3                  else if(newKey == SIX || key==6)
+ 172   3                  {
+ 173   4                    P2=0x08;
+ 174   4                      P0=0x7d;
+ 175   4                  }
+C51 COMPILER V9.60.7.0   MAIN                                                              11/19/2023 14:44:42 PAGE 4   
+
+ 176   3                  else if(newKey == SEVEN || key==7)
+ 177   3                  {
+ 178   4                    P2=0x04;
+ 179   4                      P0=0x07;
+ 180   4                  }
+ 181   3                  else if(newKey == EIGHT || key==8)
+ 182   3                  {
+ 183   4                    P2=0x00;
+ 184   4                      P0=0x7f;
+ 185   4                  }
+ 186   3                  newKey = 0; 
+ 187   3                  key=0;
+ 188   3                  t=1;
+ 189   3              }
+ 190   2              ain2 = XPT2046_read_ADC(ch2, (ADC_res_12 | single_ended_ADC | power_down_between_conversions_IRQ_enabl
+             -ed));
+ 191   2              light = ain2;
+ 192   2               if(light<50)
+ 193   2                 {
+ 194   3                   P2=0x00;
+ 195   3                   t=0;
+ 196   3                 }
+ 197   2                 else if(t==0)
+ 198   2                {
+ 199   3                  P2=0xff;
+ 200   3                }
+ 201   2          }   
+ 202   1      }   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1131    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     37       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

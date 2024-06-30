@@ -1,0 +1,203 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              11/20/2023 13:55:06 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          #include <intrins.h>
+   3          #include <stdlib.h>
+   4          #define uchar unsigned char
+   5          #define uint unsigned int
+   6          #define COMMONPORTS   P0
+   7          sbit SRCLK1=P3^6;
+   8          sbit RCLK1=P3^5;
+   9          sbit SER=P3^4;
+  10          unsigned char code TAB[8]  = {0x7f,0xbf,0xdf,0xef,0xf7,0xfb,0xfd,0xfe};
+  11          unsigned char CHARCODE1[8];
+  12          uchar xfood_position=0;
+  13          uchar yfood_position=0;
+  14          uchar snake_length = 2; 
+  15          uchar xsnake[50]; // Bi?u di?n ma tr?n 8x8
+  16          uchar ysnake[50];
+  17          uchar nut=1;
+  18          int k[4][4]={{0,0,0,0},
+  19                            {0,0,0,0},
+  20                            {0,0,0,0},
+  21                            {0,0,0,0},
+  22                            };
+  23          
+  24          void delay(uint time) {
+  25   1          uint i, j;
+  26   1          for (i = 0; i < time; i++)
+  27   1              for (j = 0; j < 120; j++);
+  28   1      }
+  29          
+  30          void Hc595SendByte(unsigned char dat)
+  31          {
+  32   1        unsigned char a;
+  33   1        SRCLK1=0;
+  34   1        RCLK1=0;
+  35   1        for(a=0;a<8;a++)
+  36   1        {
+  37   2          SER=dat>>7;
+  38   2          dat<<=1;
+  39   2      
+  40   2          SRCLK1=1;
+  41   2          _nop_();
+  42   2          _nop_();
+  43   2          SRCLK1=0; 
+  44   2        }
+  45   1      
+  46   1        RCLK1=1;
+  47   1        _nop_();
+  48   1        _nop_();
+  49   1        RCLK1=0;
+  50   1      }
+  51          
+  52          void display() {
+  53   1          uchar i,j,tg, tab,dem;
+  54   1        dem=0;
+C51 COMPILER V9.60.7.0   MAIN                                                              11/20/2023 13:55:06 PAGE 2   
+
+  55   1        for (i=0; i<8; i++)
+  56   1        {
+  57   2          CHARCODE1[i]=0x00;
+  58   2          for(j=0; j<=snake_length-1; j++)
+  59   2          {
+  60   3            if(xsnake[j]==i)
+  61   3            {
+  62   4                tg=0x01<<(7-ysnake[j]);
+  63   4                CHARCODE1[i]=CHARCODE1[i] | tg;
+  64   4            }
+  65   3          }
+  66   2          if(xfood_position==i)
+  67   2            {
+  68   3                tg=0x01<<(7-yfood_position);
+  69   3                CHARCODE1[i]=CHARCODE1[i] | tg;
+  70   3            }
+  71   2      }
+  72   1        for(i= 0; i<10; i++ )   
+  73   1          {
+  74   2            for(tab=0;tab<8;tab++)
+  75   2            { 
+  76   3              Hc595SendByte(0x00);                                      
+  77   3              COMMONPORTS = TAB[tab];     
+  78   3              Hc595SendByte(CHARCODE1[tab]);  
+  79   3              delay(1);   
+  80   3            }
+  81   2          }
+  82   1      }
+  83          
+  84          void generateFood() {
+  85   1          xfood_position = rand() % 8;
+  86   1          yfood_position = rand() % 8;
+  87   1      }
+  88          
+  89          void updateSnake() {
+  90   1          uchar i;
+  91   1          for (i = (snake_length-1); i > 0; i--) {
+  92   2              xsnake[i] = xsnake[i - 1];
+  93   2              ysnake[i] = ysnake[i - 1];
+  94   2          }
+  95   1          if (nut == 1) {
+  96   2          xsnake[0] = xsnake[0] + 1;
+  97   2            if(xsnake[0]==8)
+  98   2            {
+  99   3              xsnake[0]=0;
+ 100   3            }
+ 101   2          } 
+ 102   1          else if (nut == 2) {
+ 103   2              ysnake[0] = ysnake[0] + 1;
+ 104   2            if(ysnake[0]==8)
+ 105   2            {
+ 106   3              ysnake[0]=0;
+ 107   3            }
+ 108   2          } 
+ 109   1          else if (nut == 3) {
+ 110   2            if(xsnake[0]==0)
+ 111   2            {
+ 112   3              xsnake[0]=7;
+ 113   3            }
+ 114   2            else
+ 115   2            {
+ 116   3              xsnake[0] = xsnake[0] - 1;
+C51 COMPILER V9.60.7.0   MAIN                                                              11/20/2023 13:55:06 PAGE 3   
+
+ 117   3            }
+ 118   2          } 
+ 119   1          else if (nut == 4) {
+ 120   2            if(ysnake[0]==0)
+ 121   2            {
+ 122   3              ysnake[0]=7;
+ 123   3            }
+ 124   2            else
+ 125   2            {
+ 126   3              ysnake[0] = ysnake[0] - 1;
+ 127   3            }
+ 128   2          } 
+ 129   1          }
+ 130          
+ 131          bit checkCollision() {
+ 132   1          uchar i;
+ 133   1          for (i = 1; i < snake_length; i++) {
+ 134   2              if (xsnake[0] == xsnake[i] && ysnake[0] == ysnake[i]) {
+ 135   3                  return 1; // Collision detected
+ 136   3              }
+ 137   2          }
+ 138   1          return 0; // No collision
+ 139   1      }
+ 140          
+ 141          void main() {
+ 142   1        uchar i;
+ 143   1          xsnake[0]=1;
+ 144   1          ysnake[0]=0;
+ 145   1        xsnake[1]=0;
+ 146   1          ysnake[1]=0;
+ 147   1        for ( i = 1; i < 50; i++) {
+ 148   2              xsnake[i] = 10;
+ 149   2              ysnake[i] = 10;
+ 150   2          }
+ 151   1          generateFood();
+ 152   1          while(1) {
+ 153   2            if(P3_0==0)
+ 154   2            {
+ 155   3              nut=1;
+ 156   3            }
+ 157   2            else if(P3_1==0)
+ 158   2            {
+ 159   3              nut=2;
+ 160   3            }
+ 161   2            else if(P3_2==0)
+ 162   2            {
+ 163   3              nut=3;
+ 164   3            }
+ 165   2            else if(P3_3==0)
+ 166   2            {
+ 167   3              nut=4;
+ 168   3            }
+ 169   2              updateSnake();
+ 170   2              if (checkCollision()) {
+ 171   3                  // Game over
+ 172   3                  break;
+ 173   3              }
+ 174   2              if (xsnake[0] == xfood_position && ysnake[0] == yfood_position) {
+ 175   3                  // Snake ate the food
+ 176   3                  generateFood();
+ 177   3                  snake_length++;
+ 178   3                  updateSnake();
+C51 COMPILER V9.60.7.0   MAIN                                                              11/20/2023 13:55:06 PAGE 4   
+
+ 179   3              }
+ 180   2      
+ 181   2              display();
+ 182   2              delay(1);
+ 183   2          }
+ 184   1      }
+*** ERROR C249 IN LINE 184 OF main.c: 'DATA': SEGMENT TOO LARGE
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

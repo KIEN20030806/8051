@@ -1,0 +1,59 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              09/11/2023 14:51:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          unsigned char led[10]={0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
+   3          int n;
+   4          
+   5          void delay(unsigned int
+   6          ms)
+   7          {
+   8   1        unsigned int p,k;
+   9   1        for (p=0;p<ms;p++)
+  10   1          for (k=0;k<120;k++)
+  11   1          {}
+  12   1      }
+  13          
+  14          void main()
+  15          {
+  16   1        P2=0x00;
+  17   1        n=0;
+  18   1        P0=led[n];
+  19   1        while(1)
+  20   1        {
+  21   2          if(P3_3==0 && n<9) 
+  22   2          {
+  23   3            n++;
+  24   3            P0=led[n];
+  25   3            delay(300);
+  26   3          }
+  27   2          if(P3_2==0 && n>0) 
+  28   2          {
+  29   3            n--;
+  30   3            P0=led[n];
+  31   3            delay(300);
+  32   3          }
+  33   2        }
+  34   1      }
+  35          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    117    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     12    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

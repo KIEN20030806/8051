@@ -1,0 +1,47 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/09/2023 14:22:06 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2           
+   3          unsigned char code maquet[8]={0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+   4          unsigned char code maled[8]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+   5           
+   6          void delay(unsigned int t) //hàm delay
+   7             {
+   8   1            unsigned int x,y;
+   9   1            for(x=0;x<t;x++)
+  10   1              {
+  11   2                  for(y=0;y<123;y++);
+  12   2              }
+  13   1         } 
+  14          void main()
+  15          {
+  16   1       while(1)
+  17   1       {
+  18   2         
+  19   2           P2 = maled[0];  //xuat ma led dong i
+  20   2           P0 = maquet[1]; //bat sang dong i       //delay de mat kip nhin
+  21   2        
+  22   2       }
+  23   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     48    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

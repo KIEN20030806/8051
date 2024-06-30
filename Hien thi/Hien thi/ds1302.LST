@@ -1,0 +1,147 @@
+C51 COMPILER V9.60.7.0   DS1302                                                            10/02/2023 08:42:24 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DS1302
+OBJECT MODULE PLACED IN ds1302.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ds1302.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include"ds1302.h"
+   2          
+   3          
+   4          uchar code READ_RTC_ADDR[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8b, 0x8d}; 
+   5          uchar code WRITE_RTC_ADDR[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c};
+   6          
+   7          
+   8          uchar TIME[7] = {0x0, 0x42, 0x8, 0x10, 0x02, 0x3, 0x2};
+   9          
+  10          
+  11          void Ds1302Write(uchar addr, uchar dat)
+  12          {    
+  13   1        uchar n;
+  14   1      
+  15   1          EA = 0;
+  16   1        RST = 0;
+  17   1        _nop_();
+  18   1      
+  19   1        SCLK = 0;
+  20   1        _nop_();
+  21   1        RST = 1; 
+  22   1        _nop_();
+  23   1      
+  24   1        for (n=0; n<8; n++)
+  25   1        {
+  26   2          DSIO = addr & 0x01;
+  27   2          addr >>= 1;
+  28   2          SCLK = 1;
+  29   2          _nop_();
+  30   2          SCLK = 0;
+  31   2          _nop_();
+  32   2        }
+  33   1        for (n=0; n<8; n++)
+  34   1        {
+  35   2          DSIO = dat & 0x01;
+  36   2          dat >>= 1;
+  37   2          SCLK = 1;
+  38   2          _nop_();
+  39   2          SCLK = 0;
+  40   2          _nop_();  
+  41   2        } 
+  42   1           
+  43   1        RST = 0;
+  44   1        _nop_();
+  45   1          EA = 1;
+  46   1      }
+  47          
+  48          
+  49          
+  50          uchar Ds1302Read(uchar addr)
+  51          {   
+  52   1          uchar n,dat,dat1;
+  53   1          
+  54   1          EA =0;
+  55   1        RST = 0;
+C51 COMPILER V9.60.7.0   DS1302                                                            10/02/2023 08:42:24 PAGE 2   
+
+  56   1        _nop_();
+  57   1      
+  58   1        SCLK = 0;
+  59   1        _nop_();
+  60   1        RST = 1;
+  61   1        _nop_();
+  62   1      
+  63   1        for(n=0; n<8; n++)
+  64   1        {
+  65   2          DSIO = addr & 0x01;
+  66   2          addr >>= 1;
+  67   2          SCLK = 1;
+  68   2          _nop_();
+  69   2          SCLK = 0;
+  70   2          _nop_();
+  71   2        }
+  72   1        _nop_();
+  73   1        for(n=0; n<8; n++)
+  74   1        {
+  75   2          dat1 = DSIO;
+  76   2          dat = (dat>>1) | (dat1<<7);
+  77   2          SCLK = 1;
+  78   2          _nop_();
+  79   2          SCLK = 0;
+  80   2          _nop_();
+  81   2        }
+  82   1      
+  83   1        RST = 0;
+  84   1        _nop_();  
+  85   1        SCLK = 1;
+  86   1        _nop_();
+  87   1        DSIO = 0;
+  88   1        _nop_();
+  89   1        DSIO = 1;
+  90   1        _nop_();
+  91   1          EA = 1;
+  92   1        return dat; 
+  93   1      }
+  94          
+  95          
+  96          
+  97          void Ds1302Init()
+  98          {
+  99   1        uchar n;
+ 100   1        Ds1302Write(0x8E,0X00);    
+ 101   1        for (n=0; n<7; n++)
+ 102   1        {
+ 103   2          Ds1302Write(WRITE_RTC_ADDR[n],TIME[n]); 
+ 104   2        }
+ 105   1        Ds1302Write(0x8E,0x80);   
+ 106   1      }
+ 107          
+ 108          
+ 109          
+ 110          void Ds1302ReadTime()
+ 111          {
+ 112   1        uchar n;
+ 113   1        for (n=0; n<7; n++)
+ 114   1        {
+ 115   2          TIME[n] = Ds1302Read(READ_RTC_ADDR[n]);
+ 116   2        }
+ 117   1          
+C51 COMPILER V9.60.7.0   DS1302                                                            10/02/2023 08:42:24 PAGE 3   
+
+ 118   1      }
+ 119          
+ 120          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    192    ----
+   CONSTANT SIZE    =     14    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

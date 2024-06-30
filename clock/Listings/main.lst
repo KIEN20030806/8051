@@ -1,0 +1,107 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              09/18/2023 16:41:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          unsigned char led[10]={0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
+   3          
+   4          void delay(unsigned int
+   5          ms)
+   6          {
+   7   1        unsigned int p,k;
+   8   1        for (p=0;p<ms;p++)
+   9   1          for (k=0;k<240;k++)
+  10   1          {}
+  11   1      }
+  12          
+  13          /*void delay_0_1s() {
+  14              unsigned int i, j;
+  15              for (i = 0; i < 112; i++) { // C?n 112 l?n l?p d? t?o delay x?p x? 1 giây
+  16                  for (j = 0; j < 100; j++); // Delay ng?n hon d? tính toán d? 112 l?n
+  17              }
+  18          } */
+  19          
+  20          void hienthi(unsigned char hour, unsigned char minute, unsigned char second){
+  21   1        int n;
+  22   1          for(n=0; n<60; n++)
+  23   1              {
+  24   2              P2=0x00;
+  25   2              P0= led[second%10];
+  26   2              delay(1);
+  27   2              P2=0x04;
+  28   2              P0= led[second / 10];
+  29   2              delay(1);
+  30   2                P2=0x08;
+  31   2                P0= 0x40;
+  32   2              delay(1);
+  33   2                P2=0xC;
+  34   2                P0= led[minute % 10];
+  35   2              delay(1);
+  36   2                P2=0x10;
+  37   2                P0= led[minute / 10];
+  38   2              delay(1);
+  39   2                P2=0x14;
+  40   2                P0= 0x40;
+  41   2              delay(1);
+  42   2                P2=0x18;
+  43   2                P0= led[hour % 10];
+  44   2              delay(1);
+  45   2              P2=0x1C;
+  46   2                P0= led[hour / 10];
+  47   2              delay(1);
+  48   2              }
+  49   1      }
+  50          
+  51          void main() {
+  52   1        int i,j,k;
+  53   1         unsigned char hour;
+  54   1         unsigned char minute;
+C51 COMPILER V9.60.7.0   MAIN                                                              09/18/2023 16:41:28 PAGE 2   
+
+  55   1         unsigned char second;
+  56   1        i=4; 
+  57   1        j=35; 
+  58   1        k=0;
+  59   1        while(1)
+  60   1        {
+  61   2        k++;
+  62   2          if(k==60) 
+  63   2          {
+  64   3            k=0;
+  65   3            j++;
+  66   3          }
+  67   2          if(j==60)
+  68   2          {
+  69   3            j=0;
+  70   3            i++;
+  71   3          }
+  72   2          if(i==24)
+  73   2          {
+  74   3            i=0;
+  75   3          }
+  76   2          hienthi(i,j,k);
+  77   2        }
+  78   1      }
+*** WARNING C280 IN LINE 53 OF main.c: 'hour': unreferenced local variable
+*** WARNING C280 IN LINE 54 OF main.c: 'minute': unreferenced local variable
+*** WARNING C280 IN LINE 55 OF main.c: 'second': unreferenced local variable
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    243    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10      11
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)

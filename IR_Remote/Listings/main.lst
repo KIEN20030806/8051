@@ -1,0 +1,105 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/16/2023 14:05:59 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Users;.\Users) DEBUG OBJECTEXTEND 
+                    -PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /***************************************************************************************************
+   2                                                        ExploreEmbedded Copyright Notice 
+   3           ****************************************************************************************************
+   4           * File:   main.c
+   5           * Version: 16.0
+   6           * Author: ExploreEmbedded
+   7           * Website: http://www.exploreembedded.com/wiki
+   8           * Description: Sample program to decode NEC IR Remote and turn ON/OFF the bulb.
+   9          
+  10          This code has been developed and tested on ExploreEmbedded boards.  
+  11          We strongly believe that the library works on any of development boards for respective controllers. 
+  12          Check this link http://www.exploreembedded.com/wiki for awesome tutorials on 8051,PIC,AVR,ARM,Robotics,RTO
+             -S,IOT.
+  13          ExploreEmbedded invests substantial time and effort developing open source HW and SW tools, to support con
+             -sider 
+  14          buying the ExploreEmbedded boards.
+  15          
+  16          The ExploreEmbedded libraries and examples are licensed under the terms of the new-bsd license(two-clause 
+             -bsd license).
+  17          See also: http://www.opensource.org/licenses/bsd-license.php
+  18          EXPLOREEMBEDDED DISCLAIMS ANY KIND OF HARDWARE FAILURE RESULTING OUT OF USAGE OF LIBRARIES, DIRECTLY OR
+  19          INDIRECTLY. FILES MAY BE SUBJECT TO CHANGE WITHOUT PRIOR NOTICE. THE REVISION HISTORY CONTAINS THE INFORMA
+             -TION 
+  20          RELATED TO UPDATES.
+  21          
+  22          Permission to use, copy, modify, and distribute this software and its documentation for any purpose
+  23          and without fee is hereby granted, provided that this copyright notices appear in all copies 
+  24          and that both those copyright notices and this permission notice appear in supporting documentation.
+  25           **************************************************************************************************/ 
+  26          
+  27          #include <reg51.h>
+  28          #include "stdutils.h"
+  29          #include "nec_ir.h"
+  30          
+  31          sbit RELAY_PIN = P3^2;
+  32          sbit DIGIT_1 = P2^2;
+  33          sbit DIGIT_2 = P2^3;
+  34          sbit DIGIT_3 = P2^4;
+  35          void displayDigit(unsigned char digit) {
+  36   1          switch (digit) {
+  37   2              case 0: P0 = 0x3f; break; 
+  38   2              case 1: P0 = 0x06; break;
+  39   2              case 2: P0 = 0x5b; break;
+  40   2              case 3: P0 = 0x4f; break;
+  41   2              case 4: P0 = 0x66; break;
+  42   2              case 5: P0 = 0x6d; break;
+  43   2              case 6: P0 = 0x7d; break;
+  44   2              case 7: P0 = 0x07; break;
+  45   2              case 8: P0 = 0x7f; break;
+  46   2              case 9: P0 = 0x6f; break;
+  47   2              default: P0 = 0x00; break;
+  48   2          }
+  49   1      }
+  50          
+C51 COMPILER V9.60.7.0   MAIN                                                              10/16/2023 14:05:59 PAGE 2   
+
+  51          void main()
+  52          {
+  53   1          uint32_t key;
+  54   1          RELAY_PIN = 0;    // Turn OFF the relay during Init
+  55   1          IR_RemoteInit();  // Initialtile the INTO and Timer0 for decoding the IR pulses
+  56   1      
+  57   1          while(1)
+  58   1          {
+  59   2              key = IR_RemoteGetKey();  // Read the key press, it returns key code if key press is detected, els
+             -e it returns 0
+  60   2      
+  61   2              switch(key)
+  62   2              {
+  63   3              case IR_CODE_1: P2=0; break;
+  64   3              case IR_CODE_2: P2=0; break;
+  65   3              case IR_CODE_3: P2=0; break;
+  66   3              case IR_CODE_4: P2=0; break;
+  67   3              case IR_CODE_5: P2=0; break;
+  68   3              case IR_CODE_6: P2=0; break;
+  69   3              case IR_CODE_7: P2=0; break;
+  70   3              case IR_CODE_8: P2=0;break;
+  71   3              default: break;
+  72   3              }
+  73   2          }   
+  74   1      }   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    180    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

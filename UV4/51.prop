@@ -1,0 +1,28 @@
+# C/C++ Editor files
+# User keywords
+keywords6.$(file.patterns.cpp)=_at_ alien interrupt _priority_ reentrant _task_ using noaregs noregparms optimize \
+size objectadvanced auto register static extern bit char enum int \
+float double sbit sfr sfr16 code data idata bdata xdata \
+pdata far small compact large ASM DEFINE2 ENDASM INCDIR1 NOEXTEND1 \
+CODE1 COND1 EJECT LISTINCLUDE NOCOND1 NOPRINT1 PAGELENGTH1 \ AREGS BROWSE1 \
+COMPACT1 DEBUG1 DISABLE FARWARNING FIXXC800 FLOATFUZZY INTERVAL1 INTPROMOTE1 INTVECTOR1 LARGE1 \
+MAXARGS1 MOD517 MODA2 MODAB2 MODDA MODDP2 MODP2 NOAMAKE1 NOAREGS NOINTPROMOTE1 \
+NOINTVECTOR1 NOMOD517 NOMODA2 NOMODAB2 NOMODDA NOMODDP2 MODP2 NOOBJECT1 NOREGPARMS OBJECT1 \
+OBJECTADVANCED1 OBJECTEXTEND1 OMF21 ONEREGBANK OPTIMIZE ORDER1 PSOC1 REGPARMS RESTORE RET_PSTK1 \
+RET_XSTK1 ROM1 SAVE SMALL1 SRC1 STRING1 USERCLASS1 VARBANKING1 XCROM1 __c51__ \
+__cx51__ __date__ __date2__ __file__ __line__ __model__ __time__ __stdc__ 
+
+
+
+# Asm Editor files
+# User keywords
+keywords6.$(file.patterns.asm)=
+
+
+
+# Editor Text files
+# User keywords
+keywords6.$(file.patterns.txt)=
+
+
+

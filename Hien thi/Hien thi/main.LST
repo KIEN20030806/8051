@@ -1,0 +1,167 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2023 08:41:57 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg51.h>
+   2          #include "ds1302.h"
+   3          #define DIG P0
+   4          
+   5          sbit LSA = P2 ^ 2;
+   6          sbit LSB = P2 ^ 3;
+   7          sbit LSC = P2 ^ 4;
+   8          sbit P3_3 = P3^3;
+   9          sbit P3_2 = P3^2;
+  10          
+  11          unsigned char code DIG_CODE[10] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
+  12          unsigned char Num = 0;
+  13          unsigned int disp[8] = {0x3f, 0x3f, 0x3f, 0x3f, 0x3f, 0x3f, 0x3f, 0x3f};
+  14          bit displayTimeMode = 1;
+  15          bit previousP3_2 = 0;
+  16          
+  17          
+  18          void Timer0Configuration();
+  19          
+  20          void main() {
+  21   1          Ds1302Init();
+  22   1          Timer0Configuration();
+  23   1          while (1) {
+  24   2              Ds1302ReadTime();
+  25   2      
+  26   2        
+  27   2        
+  28   2        
+  29   2        
+  30   2        
+  31   2        
+  32   2        
+  33   2        if (P3_2 == 1 && previousP3_2 == 0) 
+  34   2              {
+  35   3                  displayTimeMode = !displayTimeMode ;
+  36   3              }
+  37   2      
+  38   2              previousP3_2 = P3_2;  // C?p nh?t tr?ng thái tru?c dó c?a P3_2
+  39   2          
+  40   2      
+  41   2      
+  42   2      
+  43   2        
+  44   2        
+  45   2        
+  46   2        
+  47   2        
+  48   2        
+  49   2        
+  50   2        
+  51   2        
+  52   2        
+  53   2        if (displayTimeMode == 1) 
+  54   2              {
+  55   3                  // Display time
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2023 08:41:57 PAGE 2   
+
+  56   3                  disp[7] = DIG_CODE[TIME[0] & 0x0f];
+  57   3                  disp[6] = DIG_CODE[TIME[0] >> 4];
+  58   3                  disp[5] = 0X00;
+  59   3                  disp[4] = DIG_CODE[TIME[1] & 0x0f];
+  60   3                  disp[3] = DIG_CODE[TIME[1] >> 4];
+  61   3                  disp[2] = 0X00;
+  62   3                  disp[1] = DIG_CODE[TIME[2] & 0x0f];
+  63   3                  disp[0] = DIG_CODE[TIME[2] >> 4];
+  64   3              } 
+  65   2              else 
+  66   2              
+  67   2              {
+  68   3                  // Display date
+  69   3                  disp[7] = DIG_CODE[TIME[5] & 0x0f];
+  70   3                  disp[6] = DIG_CODE[TIME[6] & 0x0f];
+  71   3                  disp[5] = 0X00;
+  72   3                  disp[4] = DIG_CODE[TIME[4] & 0x0f];
+  73   3                  disp[3] = DIG_CODE[TIME[4] >> 4];
+  74   3                  disp[2] = 0X00;
+  75   3                  disp[1] = DIG_CODE[TIME[3] & 0x0f];
+  76   3                  disp[0] = DIG_CODE[TIME[3] >> 4];
+  77   3              }
+  78   2          }
+  79   1      }
+  80          
+  81          void Timer0Configuration() {
+  82   1          TMOD = 0X02;
+  83   1          TH0 = 0X9C;
+  84   1          TL0 = 0X9C;
+  85   1          ET0 = 1;
+  86   1          EA = 1;
+  87   1          TR0 = 1;
+  88   1      }
+  89          
+  90          
+  91          
+  92          void DigDisplay() interrupt 1 {
+  93   1          DIG = 0;
+  94   1          switch (Num) {
+  95   2              case (7):
+  96   2                  LSA = 0;
+  97   2                  LSB = 0;
+  98   2                  LSC = 0;
+  99   2                  break;
+ 100   2              case (6):
+ 101   2                  LSA = 1;
+ 102   2                  LSB = 0;
+ 103   2                  LSC = 0;
+ 104   2                  break;
+ 105   2              case (5):
+ 106   2                  LSA = 0;
+ 107   2                  LSB = 1;
+ 108   2                  LSC = 0;
+ 109   2                  break;
+ 110   2              case (4):
+ 111   2                  LSA = 1;
+ 112   2                  LSB = 1;
+ 113   2                  LSC = 0;
+ 114   2                  break;
+ 115   2              case (3):
+ 116   2                  LSA = 0;
+ 117   2                  LSB = 0;
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2023 08:41:57 PAGE 3   
+
+ 118   2                  LSC = 1;
+ 119   2                  break;
+ 120   2              case (2):
+ 121   2                  LSA = 1;
+ 122   2                  LSB = 0;
+ 123   2                  LSC = 1;
+ 124   2                  break;
+ 125   2              case (1):
+ 126   2                  LSA = 0;
+ 127   2                  LSB = 1;
+ 128   2                  LSC = 1;
+ 129   2                  break;
+ 130   2              case (0):
+ 131   2                  LSA = 1;
+ 132   2                  LSB = 1;
+ 133   2                  LSC = 1;
+ 134   2                  break;
+ 135   2          }
+ 136   1          DIG = disp[Num];
+ 137   1          Num++;
+ 138   1          if (Num > 7)
+ 139   1              Num = 0;
+ 140   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    330    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     17    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

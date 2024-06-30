@@ -1,0 +1,211 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/30/2023 16:38:07 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REG51.h>
+   2          #include<intrins.h>
+   3          #define COMMONPORTS   P0
+   4          sbit SRCLK=P3^6;
+   5          sbit RCLK=P3^5;
+   6          sbit SER=P3^4;
+   7          unsigned char code TAB[8]  = {0x7f,0xbf,0xdf,0xef,0xf7,0xfb,0xfd,0xfe};
+   8          unsigned char code CHARCODE[10][4]=
+   9          {
+  10          {0x00,0x7E,0x42,0x7E},
+  11          {0x00,0x00,0x00,0x7E},
+  12          {0x00,0x5E,0x52,0x72},
+  13          {0x00,0x52,0x52,0x7E},
+  14          {0x00,0x70,0x10,0x7E},
+  15          {0x00,0x72,0x52,0x5E},
+  16          {0x00,0x7E,0x52,0x5E},
+  17          {0x00,0x40,0x40,0x7E},
+  18          {0x00,0x7E,0x52,0x7E},
+  19          {0x00,0x72,0x52,0x7E},
+  20          };
+  21          unsigned char code CHARCODE1[3][8]=
+  22          {
+  23            {0x00,0x00,0x08,0x08,0x3E,0x08,0x08,0x00},
+  24            {0x00,0x00,0x08,0x08,0x08,0x08,0x00,0x00},
+  25            {0x00,0x00,0x14,0x14,0x14,0x14,0x00,0x00},
+  26          };
+  27          int m,s,o,r,key;
+  28          int keypad[4][4]={{0,1100,1200,1300},
+  29                            {1,2,3,10},
+  30                            {4,5,6,10},
+  31                            {7,8,9,10},
+  32                            };
+  33          
+  34          void delay(unsigned int
+  35          ms)
+  36          {
+  37   1        unsigned int p,k;
+  38   1        for (p=0;p<ms;p++)
+  39   1          for (k=0;k<121;k++)
+  40   1          {}
+  41   1      }
+  42          
+  43          int quetphim()
+  44          {
+  45   1      int c, r;
+  46   1      P1=0x0F;
+  47   1      delay(2);
+  48   1        if(P1!=0x0F)   
+  49   1        {
+  50   2          for(r=0;r<4;r++)                    
+  51   2          {
+  52   3            P1=~(0x01<<(4+r));
+  53   3            delay(1);
+  54   3            for(c=0;c<4;c++)         
+C51 COMPILER V9.60.7.0   MAIN                                                              10/30/2023 16:38:07 PAGE 2   
+
+  55   3            {
+  56   4              if((P1&(0x01<<c))==0)
+  57   4              {
+  58   5                while((P1&(0x01<<c))==0) {};
+  59   5                  P1=0x0F;
+  60   5                return keypad[r][3-c]; 
+  61   5            }
+  62   4            }
+  63   3          }
+  64   2        }
+  65   1      P1=0x0F;
+  66   1        return 1400;
+  67   1      }
+  68          
+  69          void Hc595SendByte(unsigned char dat)
+  70          {
+  71   1        unsigned char a;
+  72   1        SRCLK=0;
+  73   1        RCLK=0;
+  74   1        for(a=0;a<8;a++)
+  75   1        {
+  76   2          SER=dat>>7;
+  77   2          dat<<=1;
+  78   2      
+  79   2          SRCLK=1;
+  80   2          _nop_();
+  81   2          _nop_();
+  82   2          SRCLK=0;  
+  83   2        }
+  84   1      
+  85   1        RCLK=1;
+  86   1        _nop_();
+  87   1        _nop_();
+  88   1        RCLK=0;
+  89   1      }
+  90          
+  91          void hienthi(int j){
+  92   1        unsigned char tab;
+  93   1        unsigned int  i;
+  94   1        if(j<100)
+  95   1        {
+  96   2          for(i= 0; i<10; i++ )   
+  97   2          {
+  98   3            for(tab=0;tab<4;tab++)
+  99   3            { 
+ 100   4              Hc595SendByte(0x00);                                      
+ 101   4              COMMONPORTS = TAB[tab];     
+ 102   4              Hc595SendByte(CHARCODE[j/10][tab]); 
+ 103   4              delay(1);   
+ 104   4            }
+ 105   3            for(tab=0;tab<4;tab++)
+ 106   3            { 
+ 107   4      
+ 108   4              Hc595SendByte(0x00);                                      
+ 109   4              COMMONPORTS = TAB[tab+4];     
+ 110   4              Hc595SendByte(CHARCODE[j%10][tab]); 
+ 111   4              delay(1);   
+ 112   4            }
+ 113   3        }
+ 114   2      }
+ 115   1        else if(j>1000) 
+ 116   1        {
+C51 COMPILER V9.60.7.0   MAIN                                                              10/30/2023 16:38:07 PAGE 3   
+
+ 117   2          j=j/100-11;
+ 118   2          for(i= 0; i<30; i++ )   
+ 119   2          {
+ 120   3            for(tab=0;tab<8;tab++)
+ 121   3            { 
+ 122   4      
+ 123   4              Hc595SendByte(0x00);                                      
+ 124   4              COMMONPORTS = TAB[7-tab];     
+ 125   4              Hc595SendByte(CHARCODE1[j][tab]); 
+ 126   4              delay(1);   
+ 127   4            }
+ 128   3          }
+ 129   2        }
+ 130   1      }
+ 131          
+ 132          void main(){
+ 133   1        int z=0;
+ 134   1         m=0;s=0; o=0;
+ 135   1        while(1){
+ 136   2          key=quetphim();
+ 137   2            if (key<1400)
+ 138   2            {
+ 139   3              if(key == 1300) 
+ 140   3              {
+ 141   4                if(z==0)
+ 142   4                  s=s+o;
+ 143   4                else 
+ 144   4                  s=s-o;
+ 145   4                while(P1==0x0F)
+ 146   4                {
+ 147   5                  hienthi(s);
+ 148   5                }
+ 149   4                o=0;
+ 150   4              }
+ 151   3              else if(key<10) 
+ 152   3              {
+ 153   4                o=o*10+key;
+ 154   4                while(P1==0x0F)
+ 155   4                {
+ 156   5                  hienthi(o);
+ 157   5                }
+ 158   4              }
+ 159   3              else if (key==1100) 
+ 160   3              {
+ 161   4                while(P1==0x0F)
+ 162   4                {
+ 163   5                  hienthi(key);
+ 164   5                }
+ 165   4                s=s+o;
+ 166   4                z=0;
+ 167   4                o=0;
+ 168   4              }
+ 169   3              else if (key==1200) 
+ 170   3              {
+ 171   4                  while(P1==0x0F)
+ 172   4                {
+ 173   5                  hienthi(key);
+ 174   5                }
+ 175   4                s=s+o;
+ 176   4                z=1;
+ 177   4                o=0;
+ 178   4              }
+C51 COMPILER V9.60.7.0   MAIN                                                              10/30/2023 16:38:07 PAGE 4   
+
+ 179   3            }
+ 180   2        }
+ 181   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    738    ----
+   CONSTANT SIZE    =     72    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     42       7
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

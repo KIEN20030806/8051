@@ -1,0 +1,22 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              09/18/2023 16:29:25 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          #include "common.h"
+   3          #include "DS1302.c"
+*** ERROR C129 IN LINE 14 OF DS1302.c: missing ';' before 'OPERATION_KEY_PRESSED'
+   4          
+   5          void main()
+   6          {
+   7            setup();
+   8            while(1) loop();
+   9          }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj" 
+TO ".\Objects\IRRemote" 
+PRINT(".\Listings\IRRemote.m51") RAMSIZE(256) 

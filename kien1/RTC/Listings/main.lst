@@ -1,0 +1,274 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              09/26/2023 22:41:22 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\8051\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.ls
+                    -t) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          #ifndef __DS1302__
+   3          #define __DS1302__
+   4          
+   5          #define low   0
+   6          #define high  1
+   7          
+   8          #define DS1302_SCK P3_6
+   9          #define DS1302_IO  P3_4
+  10          #define DS1302_RST P3_5
+  11          
+  12          #define DS1302_ADDR_YEAR     0x8C
+  13          #define DS1302_ADDR_WEEK     0x8A
+  14          #define DS1302_ADDR_MONTH    0x88
+  15          #define DS1302_ADDR_DAY      0x86
+  16          #define DS1302_ADDR_HOUR     0x84
+  17          #define DS1302_ADDR_MINUTE   0x82
+  18          #define DS1302_ADDR_SECOND   0x80
+  19          unsigned char led[11]={0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0x7f};
+  20          unsigned int count = 0; 
+  21          unsigned int check = 1, it=1, j=0, k=0, m=0, n=0, q=0;
+  22          
+  23          /**
+  24           * ???????
+  25           */
+  26          typedef struct __DS1302_DATE_TIME__
+  27          {
+  28            unsigned char year;
+  29            unsigned char week;
+  30            unsigned char month;
+  31            unsigned char day;
+  32            unsigned char hour;
+  33            unsigned char minute;
+  34            unsigned char second;
+  35          } ds1302_Datetime;
+  36           ds1302_Datetime myDatetime;
+  37          
+  38          unsigned char to_bcd(unsigned char val)
+  39          {
+  40   1        return ((val / 10) << 4 | (val % 10));
+  41   1      }
+  42          
+  43          unsigned char from_bcd(unsigned char bcd)
+  44          {
+  45   1        return ((bcd&0x70)>>4)*10 + (bcd&0x0F);
+  46   1      }
+  47          
+  48          /**
+  49           * ds1302
+  50           * @param dat ??
+  51           */
+  52          void ds1302_write(unsigned char dat)
+  53          {
+  54   1        unsigned char i;
+C51 COMPILER V9.60.7.0   MAIN                                                              09/26/2023 22:41:22 PAGE 2   
+
+  55   1        for(i=0; i<8; i++)
+  56   1        {
+  57   2          DS1302_SCK = low;
+  58   2          DS1302_IO = dat & 0x01;
+  59   2          dat >>= 1;
+  60   2          DS1302_SCK = high;
+  61   2        }
+  62   1      }
+  63          
+  64          /**
+  65           * ?????????
+  66           * @param addr ??
+  67           * @param dat ??
+  68           */
+  69          void ds1302_write_to_addr(unsigned char addr, unsigned char dat)
+  70          {
+  71   1        DS1302_RST = low;
+  72   1        DS1302_SCK = low;
+  73   1        DS1302_RST = high;
+  74   1        ds1302_write(addr);
+  75   1        ds1302_write(dat);
+  76   1        // ??
+  77   1        DS1302_RST = low;
+  78   1        DS1302_IO = high;
+  79   1        DS1302_SCK = high;
+  80   1      }
+  81          
+  82          /**
+  83           * ?????????
+  84           * @param  addr [description]
+  85           * @return      [description]
+  86           */
+  87          unsigned char ds1302_read_from_addr(unsigned char addr)
+  88          {
+  89   1        unsigned char i, value = 0;
+  90   1        DS1302_RST = low;
+  91   1        DS1302_SCK = low;
+  92   1        DS1302_RST = high;
+  93   1        ds1302_write(addr);
+  94   1        for(i=0; i<8; i++)
+  95   1        {
+  96   2          DS1302_SCK = low;
+  97   2          value >>= 1;
+  98   2          if(DS1302_IO)
+  99   2            value |= 0x80;
+ 100   2          DS1302_SCK = high;
+ 101   2        }
+ 102   1        // ??
+ 103   1        DS1302_RST = low;
+ 104   1        DS1302_IO = high;
+ 105   1        DS1302_SCK = high;
+ 106   1        return value;
+ 107   1      }
+ 108          
+ 109          /**
+ 110           * ??1302
+ 111           * @param attr  [description]
+ 112           * @param value [description]
+ 113           */
+ 114          void ds1302_set_datetime(ds1302_Datetime *datetime)
+ 115          {
+ 116   1        ds1302_write_to_addr(0x8E, 0x00);
+C51 COMPILER V9.60.7.0   MAIN                                                              09/26/2023 22:41:22 PAGE 3   
+
+ 117   1        ds1302_write_to_addr(DS1302_ADDR_YEAR, to_bcd(datetime->year));
+ 118   1        ds1302_write_to_addr(DS1302_ADDR_WEEK, to_bcd(datetime->week));
+ 119   1        ds1302_write_to_addr(DS1302_ADDR_MONTH, to_bcd(datetime->month));
+ 120   1        ds1302_write_to_addr(DS1302_ADDR_DAY, to_bcd(datetime->day));
+ 121   1        ds1302_write_to_addr(DS1302_ADDR_HOUR, to_bcd(datetime->hour));
+ 122   1        ds1302_write_to_addr(DS1302_ADDR_MINUTE, to_bcd(datetime->minute));
+ 123   1        ds1302_write_to_addr(DS1302_ADDR_SECOND, to_bcd(datetime->second));
+ 124   1        ds1302_write_to_addr(0x8E, 0x10);
+ 125   1      }
+ 126          
+ 127          /**
+ 128           * ??ds1302?datetime
+ 129           * @param datetime [description]
+ 130           */
+ 131          void ds1302_get_datetime(ds1302_Datetime *datetime)
+ 132          {
+ 133   1        datetime->year   = from_bcd(ds1302_read_from_addr(DS1302_ADDR_YEAR | 0x01));
+ 134   1        datetime->week   = from_bcd(ds1302_read_from_addr(DS1302_ADDR_WEEK | 0x01));
+ 135   1        datetime->month  = from_bcd(ds1302_read_from_addr(DS1302_ADDR_MONTH | 0x01));
+ 136   1        datetime->day    = from_bcd(ds1302_read_from_addr(DS1302_ADDR_DAY | 0x01));
+ 137   1        datetime->hour   = from_bcd(ds1302_read_from_addr(DS1302_ADDR_HOUR | 0x01));
+ 138   1        datetime->minute = from_bcd(ds1302_read_from_addr(DS1302_ADDR_MINUTE | 0x01));
+ 139   1        datetime->second = from_bcd(ds1302_read_from_addr(DS1302_ADDR_SECOND | 0x01));
+ 140   1      }
+ 141          void delay(unsigned int ms)
+ 142          {
+ 143   1        unsigned int p,k;
+ 144   1        for (p=0;p<ms;p++)
+ 145   1          for (k=0;k<10;k++)
+ 146   1          {}
+ 147   1      }
+ 148          
+ 149          void hienthi(unsigned char hour, unsigned char minute, unsigned char second){
+ 150   1        int n;
+ 151   1          for(n=0; n<10; n++)
+ 152   1              {
+ 153   2              P2=0x00;
+ 154   2              P0= led[second%10];
+ 155   2              delay(1);
+ 156   2              P2=0x04;
+ 157   2              P0= led[second / 10];
+ 158   2              delay(1);
+ 159   2                P2=0x08;
+ 160   2                P0= 0x3f;
+ 161   2              delay(1);
+ 162   2                P2=0xC;
+ 163   2                P0= led[minute % 10];
+ 164   2              delay(1);
+ 165   2                P2=0x10;
+ 166   2                P0= led[minute / 10];
+ 167   2              delay(1);
+ 168   2                P2=0x14;
+ 169   2                P0= 0x3f;
+ 170   2              delay(1);
+ 171   2                P2=0x18;
+ 172   2                P0= led[hour % 10];
+ 173   2              delay(1);
+ 174   2              P2=0x1C;
+ 175   2                P0= led[hour / 10];
+ 176   2              delay(1);
+ 177   2              }
+ 178   1      }
+C51 COMPILER V9.60.7.0   MAIN                                                              09/26/2023 22:41:22 PAGE 4   
+
+ 179          void timer0_isr(void) interrupt 1
+ 180          {
+ 181   1          count++; // Tang bi?n d?m khi ng?t Timer 0 x?y ra
+ 182   1      
+ 183   1          if (count >= 61) // 2 ng?t x?y ra m?i giây (1 giây / 250ms = 4)
+ 184   1          {
+ 185   2              count = 0; // Ð?t l?i bi?n d?m
+ 186   2            check=1-check;
+ 187   2          }
+ 188   1      }
+ 189          
+ 190          void external_interrupt() interrupt 0 // X? lý ng?t ngo?i INT0
+ 191          {
+ 192   1          hienthi(myDatetime.hour, myDatetime.minute, myDatetime.second); 
+ 193   1          m=1; n=0; q=0;
+ 194   1      }
+ 195          void external_interrupt1() interrupt 2 // X? lý ng?t ngo?i INT0
+ 196          {
+ 197   1          hienthi(myDatetime.day, myDatetime.month, myDatetime.year);
+ 198   1          n=1; m=0; q=0;
+ 199   1      }
+ 200          #endif  // __DS1302__
+ 201          void main()
+ 202          {
+ 203   1         TMOD = 0x01; // Ch? d? 16-bit cho Timer 0
+ 204   1         TH0 = 0 ;      // Giá tr? cho TH0
+ 205   1         TL0 = 0 ;  
+ 206   1      
+ 207   1          ET0 = 1;     // Cho phép ng?t Timer 0
+ 208   1          EA = 1;      // Cho phép ng?t t?ng quát
+ 209   1      
+ 210   1          TR0 = 1;     // Kh?i d?ng Timer 0
+ 211   1        EA = 1;     // B?t bit EA (Interrupt Enable All)
+ 212   1        EX0 = 1;
+ 213   1          IT0 = 0;
+ 214   1        EX1 = 1;
+ 215   1          IT1 = 0;
+ 216   1        while(1)
+ 217   1        {
+ 218   2          ds1302_get_datetime(&myDatetime);
+ 219   2          if(P3_1==0) 
+ 220   2          {q=1;
+ 221   3            m=0; n=0;
+ 222   3          }
+ 223   2          if(m==1)
+ 224   2          {
+ 225   3            q=0;
+ 226   3            ET0 = 0; 
+ 227   3            hienthi(myDatetime.hour, myDatetime.minute, myDatetime.second);
+ 228   3          }
+ 229   2            if(n==1)
+ 230   2          {
+ 231   3            q=0;
+ 232   3            ET0 = 0; 
+ 233   3            hienthi(myDatetime.day, myDatetime.month, myDatetime.year);
+ 234   3          }
+ 235   2          if(q==1)
+ 236   2          {
+ 237   3            ET0 = 1;
+ 238   3            if(check) hienthi(myDatetime.hour, myDatetime.minute, myDatetime.second);
+ 239   3            else hienthi(myDatetime.day, myDatetime.month, myDatetime.year);
+ 240   3          }
+C51 COMPILER V9.60.7.0   MAIN                                                              09/26/2023 22:41:22 PAGE 5   
+
+ 241   2        }
+ 242   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    808    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     34       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj" 
+TO ".\Objects\calculator" 
+PRINT(".\Listings\calculator.m51") RAMSIZE(256) 
